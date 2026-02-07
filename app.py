@@ -7,7 +7,7 @@ import streamlit as st
 from PIL import Image
 
 # =========================
-# キャラデータ（あなたのをそのまま）
+# キャラデータ
 # =========================
 
 RAW_CHARACTER_DATA = [
@@ -201,14 +201,6 @@ if img_path:
         st.image(load_image_for_display(img_path), caption=sel, use_container_width=True)
     except Exception:
         st.warning("画像の読み込みに失敗しました。形式や破損を確認してください。")
-
-# 任意：画像から選ぶ（軽量化：ページング＆表示枚数制限）
-with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
-    st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上の検索で選ぶのが最速です。")
-    q2 = st.text_input("この中でさらに検索", key="grid_q", placeholder="例：桐生")
-    names_for_grid = all_names
-    if q2.strip():
-        names_for_grid = [n for n in names_for_grid if q2.strip() in n]
 
     page_size = st.slider("1ページの表示数", 8, 40, 16, step=4)
     total = len(names_for_grid)
