@@ -120,7 +120,6 @@ def find_image_path(name: str) -> Optional[str]:
 def load_image_for_display(path: str, max_w: int = 420) -> Image.Image:
     """表示用に軽くリサイズして返す（元画像がデカいと重いので）"""
     img = Image.open(path)
-    # アスペクト比を維持して縮小
     if img.width > max_w:
         ratio = max_w / float(img.width)
         new_h = int(img.height * ratio)
@@ -128,7 +127,7 @@ def load_image_for_display(path: str, max_w: int = 420) -> Image.Image:
     return img
 
 # =========================
-# 計算（あなたのロジック維持）
+# 計算（ロジック維持）
 # =========================
 
 def calc(name, limit, trait, j1, j2, head, body, legs,
@@ -167,12 +166,15 @@ def calc(name, limit, trait, j1, j2, head, body, legs,
     return stats
 
 # =========================
-# UI（1人だけ）
+# UI
 # =========================
 
 st.set_page_config(page_title="ステータス計算ツール", layout="centered")
-
 st.markdown("### ステータス計算ツール")
+
+# 安全に selectbox の値を書き換えるためのコールバック
+def pick_char(name: str):
+    st.session_state["char_sel"] = name
 
 attr = st.selectbox("編成の属性", ["すべて", "心", "技", "体"], index=0)
 
@@ -185,7 +187,7 @@ all_names = get_filtered_names(attr)
 
 st.session_state.setdefault("char_sel", EMPTY_CHAR)
 
-# 検索（selectboxの候補を絞るだけ。重い画像グリッドは別にする）
+# キャラ検索
 q = st.text_input("キャラ検索", placeholder="例：桐生 / 真島 / 春日 ...")
 
 if q.strip():
@@ -207,10 +209,7 @@ if img_path:
 with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
     st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上の検索で選ぶのが最速です。")
 
-    # 追加検索は削除：常に all_names を使う
     names_for_grid = all_names
-
-    # 1ページ表示数は削除：固定
     page_size = 16
 
     total = len(names_for_grid)
@@ -231,15 +230,25 @@ with st.expander("画像から選ぶ（必要なときだけ開く）", expanded
                     st.image(load_image_for_display(p, max_w=240), use_container_width=True)
                 except Exception:
                     st.write("(画像読込失敗)")
-            if st.button(name, key=f"pick_{name}", use_container_width=True):
-                st.session_state["char_sel"] = name
-                st.rerun()
+
+            # ★ ここが重要：session_state 直書きせず on_click を使う
+            st.button(
+                name,
+                key=f"pick_{name}",
+                use_container_width=True,
+                on_click=pick_char,
+                args=(name,),
+            )
+
         ci = (ci + 1) % 4
 
-    if st.button("(未選択) -", key="pick_empty", use_container_width=True):
-        st.session_state["char_sel"] = EMPTY_CHAR
-        st.rerun()
-
+    st.button(
+        "(未選択) -",
+        key="pick_empty",
+        use_container_width=True,
+        on_click=pick_char,
+        args=(EMPTY_CHAR,),
+    )
 
 st.divider()
 
