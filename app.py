@@ -75,7 +75,7 @@ EQUIP_BASE = {"head": {"int": 80}, "body": {"vit": 110}, "legs": {"str": 80}}
 EMPTY_CHAR = "-"
 
 # =========================
-# 画像関連（軽量化：選択中の1枚だけ読む）
+# 画像関連
 # =========================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -118,7 +118,6 @@ def find_image_path(name: str) -> Optional[str]:
 
 @st.cache_data(show_spinner=False)
 def load_image_for_display(path: str, max_w: int = 420) -> Image.Image:
-    """表示用に軽くリサイズして返す（元画像がデカいと重いので）"""
     img = Image.open(path)
     if img.width > max_w:
         ratio = max_w / float(img.width)
@@ -127,7 +126,7 @@ def load_image_for_display(path: str, max_w: int = 420) -> Image.Image:
     return img
 
 # =========================
-# 計算（ロジック維持）
+# 計算
 # =========================
 
 def calc(name, limit, trait, j1, j2, head, body, legs,
@@ -172,7 +171,6 @@ def calc(name, limit, trait, j1, j2, head, body, legs,
 st.set_page_config(page_title="ステータス計算ツール", layout="centered")
 st.markdown("### ステータス計算ツール")
 
-# 安全に selectbox の値を書き換えるためのコールバック
 def pick_char(name: str):
     st.session_state["char_sel"] = name
 
@@ -184,20 +182,14 @@ def get_filtered_names(attr_value: str) -> List[str]:
     return names
 
 all_names = get_filtered_names(attr)
+values = [EMPTY_CHAR] + all_names
 
 st.session_state.setdefault("char_sel", EMPTY_CHAR)
 
-# キャラ検索
-q = st.text_input("キャラ検索", placeholder="例：桐生 / 真島 / 春日 ...")
+# ✅ テキスト入力のキャラ検索は削除（ここが今回の要望）
+st.selectbox("キャラ（選択）", values, key="char_sel")
 
-if q.strip():
-    filtered = [EMPTY_CHAR] + [n for n in all_names if q.strip() in n]
-else:
-    filtered = [EMPTY_CHAR] + all_names
-
-st.selectbox("キャラ（選択）", filtered, key="char_sel")
-
-# 選択画像（1枚だけ読み込み＆縮小して表示）
+# 選択画像
 sel = st.session_state["char_sel"]
 img_path = find_image_path(sel)
 if img_path:
@@ -207,7 +199,7 @@ if img_path:
         st.warning("画像の読み込みに失敗しました。形式や破損を確認してください。")
 
 with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
-    st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上の検索で選ぶのが最速です。")
+    st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上のプルダウンで選ぶのが最速です。")
 
     names_for_grid = all_names
     page_size = 16
@@ -231,7 +223,6 @@ with st.expander("画像から選ぶ（必要なときだけ開く）", expanded
                 except Exception:
                     st.write("(画像読込失敗)")
 
-            # ★ ここが重要：session_state 直書きせず on_click を使う
             st.button(
                 name,
                 key=f"pick_{name}",
@@ -239,7 +230,6 @@ with st.expander("画像から選ぶ（必要なときだけ開く）", expanded
                 on_click=pick_char,
                 args=(name,),
             )
-
         ci = (ci + 1) % 4
 
     st.button(
