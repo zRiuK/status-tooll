@@ -249,14 +249,14 @@ j1c1, j1c2 = st.columns([2, 1])
 with j1c1:
     j1 = st.selectbox("宝飾① 効果", STAT_CHOICES, index=0, label_visibility="collapsed")
 with j1c2:
-    dash1 = st.checkbox("100mダッシュ", value=False)
+    dash1 = st.checkbox("100mダッシュ", value=False, key="dash1")
 
 st.markdown("**宝飾②**")
 j2c1, j2c2 = st.columns([2, 1])
 with j2c1:
     j2 = st.selectbox("宝飾② 効果", STAT_CHOICES, index=0, label_visibility="collapsed")
 with j2c2:
-    dash2 = st.checkbox("100mダッシュ", value=False)
+    dash2 = st.checkbox("100mダッシュ", value=False, key="dash2")
 
 st.markdown("**頭 (SSR Lv.60固定)**")
 head = st.selectbox("頭シリーズ", list(SERIES_BONUS.keys()), index=0, label_visibility="collapsed")
@@ -265,8 +265,8 @@ body = st.selectbox("胴シリーズ", list(SERIES_BONUS.keys()), index=0, label
 st.markdown("**足 (SSR Lv.60固定)**")
 legs = st.selectbox("足シリーズ", list(SERIES_BONUS.keys()), index=0, label_visibility="collapsed")
 
-ambush = st.checkbox("アンブッシュ（速度+15%）", value=False)
-mastery = st.checkbox("習熟の道（速度+12%）", value=False)
+ambush = st.checkbox("アンブッシュ（速度+15%）", value=False, key="ambush")
+mastery = st.checkbox("習熟の道（速度+12%）", value=False, key="mastery")
 
 # 計算
 if st.button("計算", type="primary", use_container_width=True):
