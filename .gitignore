@@ -1,0 +1,10 @@
+# secrets（絶対にGitに入れない）
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
