@@ -1,4 +1,2 @@
-streamlit
-pillow
-streamlit-authenticator
-pyyaml
+streamlit==1.41.1
+pillow==10.4.0
