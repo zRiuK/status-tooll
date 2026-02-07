@@ -202,10 +202,22 @@ if img_path:
     except Exception:
         st.warning("画像の読み込みに失敗しました。形式や破損を確認してください。")
 
-    page_size = st.slider("1ページの表示数", 8, 40, 16, step=4)
+with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
+    st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上の検索で選ぶのが最速です。")
+
+    q2 = st.text_input("この中でさらに検索", key="grid_q", placeholder="例：桐生")
+
+    # ← 必ず定義されるように、先にデフォルトを作る
+    names_for_grid = all_names
+
+    # 絞り込み
+    if q2.strip():
+        names_for_grid = [n for n in all_names if q2.strip() in n]
+
+    page_size = st.slider("1ページの表示数", 8, 40, 16, step=4, key="page_size")
     total = len(names_for_grid)
     pages = max(1, (total + page_size - 1) // page_size)
-    page = st.number_input("ページ", min_value=1, max_value=pages, value=1, step=1)
+    page = st.number_input("ページ", min_value=1, max_value=pages, value=1, step=1, key="page")
 
     start = (page - 1) * page_size
     end = min(total, start + page_size)
@@ -226,9 +238,10 @@ if img_path:
                 st.rerun()
         ci = (ci + 1) % 4
 
-    if st.button("(未選択) -", use_container_width=True):
+    if st.button("(未選択) -", key="pick_empty", use_container_width=True):
         st.session_state["char"] = EMPTY_CHAR
         st.rerun()
+
 
 st.divider()
 
