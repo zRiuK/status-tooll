@@ -171,7 +171,8 @@ def calc(name, limit, trait, j1, j2, head, body, legs,
 # =========================
 
 st.set_page_config(page_title="ステータス計算ツール", layout="centered")
-st.title("ステータス計算ツール（軽量・1人版）")
+
+st.markdown("### ステータス計算ツール")
 
 attr = st.selectbox("編成の属性", ["すべて", "心", "技", "体"], index=0)
 
@@ -185,7 +186,8 @@ all_names = get_filtered_names(attr)
 st.session_state.setdefault("char", EMPTY_CHAR)
 
 # 検索（selectboxの候補を絞るだけ。重い画像グリッドは別にする）
-q = st.text_input("キャラ検索（部分一致）", placeholder="例：桐生 / 真島 / 春日 ...")
+q = st.text_input("キャラ検索", placeholder="例：桐生 / 真島 / 春日 ...")
+
 if q.strip():
     filtered = [EMPTY_CHAR] + [n for n in all_names if q.strip() in n]
 else:
@@ -205,16 +207,12 @@ if img_path:
 with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
     st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上の検索で選ぶのが最速です。")
 
-    q2 = st.text_input("この中でさらに検索", key="grid_q", placeholder="例：桐生")
-
-    # ← 必ず定義されるように、先にデフォルトを作る
+    # 追加検索は削除：常に all_names を使う
     names_for_grid = all_names
 
-    # 絞り込み
-    if q2.strip():
-        names_for_grid = [n for n in all_names if q2.strip() in n]
+    # 1ページ表示数は削除：固定
+    page_size = 16
 
-    page_size = st.slider("1ページの表示数", 8, 40, 16, step=4, key="page_size")
     total = len(names_for_grid)
     pages = max(1, (total + page_size - 1) // page_size)
     page = st.number_input("ページ", min_value=1, max_value=pages, value=1, step=1, key="page")
