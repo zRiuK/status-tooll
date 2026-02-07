@@ -183,7 +183,7 @@ def get_filtered_names(attr_value: str) -> List[str]:
 
 all_names = get_filtered_names(attr)
 
-st.session_state.setdefault("char", EMPTY_CHAR)
+st.session_state.setdefault("char_sel", EMPTY_CHAR)
 
 # 検索（selectboxの候補を絞るだけ。重い画像グリッドは別にする）
 q = st.text_input("キャラ検索", placeholder="例：桐生 / 真島 / 春日 ...")
@@ -193,10 +193,10 @@ if q.strip():
 else:
     filtered = [EMPTY_CHAR] + all_names
 
-st.selectbox("キャラ（選択）", filtered, key="char")
+st.selectbox("キャラ（選択）", filtered, key="char_sel")
 
 # 選択画像（1枚だけ読み込み＆縮小して表示）
-sel = st.session_state["char"]
+sel = st.session_state["char_sel"]
 img_path = find_image_path(sel)
 if img_path:
     try:
@@ -232,12 +232,12 @@ with st.expander("画像から選ぶ（必要なときだけ開く）", expanded
                 except Exception:
                     st.write("(画像読込失敗)")
             if st.button(name, key=f"pick_{name}", use_container_width=True):
-                st.session_state["char"] = name
+                st.session_state["char_sel"] = name
                 st.rerun()
         ci = (ci + 1) % 4
 
     if st.button("(未選択) -", key="pick_empty", use_container_width=True):
-        st.session_state["char"] = EMPTY_CHAR
+        st.session_state["char_sel"] = EMPTY_CHAR
         st.rerun()
 
 
@@ -273,7 +273,7 @@ mastery = st.checkbox("習熟の道（速度+12%）", value=False, key="mastery"
 
 # 計算
 if st.button("計算", type="primary", use_container_width=True):
-    name = st.session_state["char"]
+    name = st.session_state["char_sel"]
     if not name or name == EMPTY_CHAR:
         st.info("キャラが未選択です")
     elif name not in CHARACTER_DATA:
