@@ -199,8 +199,8 @@ if img_path:
     except Exception:
         st.warning("画像の読み込みに失敗しました。形式や破損を確認してください。")
 
-with st.expander("画像から選ぶ（必要なときだけ開く）", expanded=False):
-    st.caption("※ ここを開くと画像を読み込むので、重い場合は使わず上のプルダウンで選ぶのが最速です。")
+with st.expander("画像から選択", expanded=False):
+    st.caption("※ フリーズする場合は画像選択を使用しないでください。")
 
     names_for_grid = all_names
     page_size = 16
